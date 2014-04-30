@@ -1,0 +1,25 @@
+extends layout
+ 
+
+block CONTENT
+  h1.page-header Manage_vm
+            a(href="/cms/edit_module/Manage_vm")
+                span(class="glyphicon glyphicon-cog pull-right")
+  ul(class="nav nav-tabs nav-justified")
+            li.active
+                a(href="/module/Manage_vm/form") New record
+            li
+                a(href="/module/Manage_vm/view") List
+  div.row
+    div.col-md-6
+      form(role="form",action="/create",method='POST')
+        div.form-group
+          label(for="hostname") Hostname
+            input(name="hostname",value="", type="text", class="form-control" ,id="ip", placeholder="")
+        div.form-group
+          label(for="OS") OS
+            input(name="os",value="", type="text", class="form-control" ,id="ip", placeholder="")
+        div.form-group
+          label(for="E_PORT") EXPOSURE PORT
+            input(name="ports",value="", type="text", class="form-control" ,id="ip", placeholder="")
+        button(type="submit" ,class="btn btn-success") Create MachBee

@@ -1,0 +1,56 @@
+extends layout
+
+
+block CONTENT
+    div(id="gauge_cpu",style="height:200px;width:250px;float:right")
+    div(id="gauge_ram",style="height:200px;width:250px;float:right")
+    div.clearfix
+    div
+        h2.sub-header List of all bees
+          div.table-responsive
+            table.table.table-striped
+              thead
+                tr
+                  th #
+                  th ID
+                  th Hostname
+                  th OS
+                  th Ports
+                  th CMD
+              tbody
+              each hs in data
+                tr(id="tr-#{hs.id}")
+                  td #
+                  td= hs.id
+                  td= hs.hostname
+                  td= hs.os
+                  td
+                    a(onclick="$('#port-'+port_id).css('display','none');$('#port-#{hs.id}').css('display','block');port_id='#{hs.id}';") Show  
+                  td
+                    a(href="http://192.168.0.44:#{hs.port_web}") Console
+                    a(href="/cloud/#{hs.port_web}")
+                        span.glyphicon.glyphicon-cloud(style="margin-left:5px")
+    div.col-md-2
+       each hs in data
+        div.port-class(id="port-#{hs.id}",style="display:none")
+          table.table.table-striped
+            thead
+              tr
+                th Host Port
+                th
+                th Bee Port
+            tbody 
+            each p in JSON.parse(hs.port)
+              tr
+                th= p.p_host   
+                th >>
+                th= p.c_port  
+               
+    script.
+        var port_id ='';
+        var socket = io.connect();
+        var g_cpu = new JustGage({levelColors: ['#008000','#ff0000'] ,id: "gauge_cpu", value: 67, min: 0, max: 4, title: "CPU Load" }); 
+        var g_ram = new JustGage({id: "gauge_ram", value: 4, min: 0, max: 4, title: "RAM" });
+        g_cpu.refresh(10);
+        socket.on('load_cpu',function(data){g_cpu.refresh(data.toFixed(2))});
+        socket.on('load_ram',function(data){g_ram.refresh((data/(1024*1024)).toFixed(2))});

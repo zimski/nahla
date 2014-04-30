@@ -1,0 +1,16 @@
+table.table.table-striped
+              thead
+                tr
+                  th #
+                  th File name
+                  th cmd
+              tbody
+              each f in files
+                tr(id="tr-#{f}")
+                  td #
+                  td= f
+                  td
+                    a(href="/honey/#{port}/#{f}")
+                      span.glyphicon.glyphicon-cloud-download
+     
+

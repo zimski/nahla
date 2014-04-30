@@ -1,0 +1,89 @@
+
+html
+  head
+    link(rel='stylesheet', href='/bootstrap/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/bootstrap/css/bootstrap-theme.min.css')
+    link(rel='stylesheet', href='/bootstrap/css/dashboard.css')
+    script(src='http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js')
+    script(src='/bootstrap/js/bootstrap.min.js')
+    script(src='/socket.io/socket.io.js')
+    script(src='/ace/src-min-noconflict/ace.js')
+    
+    script(src='/justgage/resources/js/justgage.1.0.1.min.js')
+    script(src='/justgage/resources/js/raphael.2.1.0.min.js')
+  body
+    div( class="navbar navbar-inverse navbar-fixed-top", role="navigation")
+      div.container-fluid
+        div.navbar-header
+          button(type="button", class="navbar-toggle" ,data-toggle="collapse" ,data-target=".navbar-collapse")
+            span.sr-only Toggle  navigation
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+          a.navbar-brand(href='/home') Nahla 
+        div.navbar-collapse.collapse
+          ul.nav.navbar-nav.navbar-right
+            li
+              a(href='#') Dashboard
+            li
+              a(href='/cms') New Module
+            li
+              a(href='javascript:$("#console").modal("show");') Console
+            li
+              a(href='/logout') Logout
+          form.navbar-form.navbar-right
+            input(type="text", class="form-control", placeholder="Search...")
+    div.container-fluid
+      div.row
+        div.col-sm-3.col-md-2.sidebar
+          ul.nav.nav-sidebar
+            li
+              a(onclick="update_module_list();")
+                span.badge(id="update_list") Click to refresh list
+            li
+              a(style=" font-weight:bold;") 
+                span.label.label-success Shaker module\'s list
+            li(id="menu-CRON_JOB")
+              a(href="/create") Create Machbee
+            li(id="menu-Manage_vm")
+              a(href="/module/Manage_vm/view") DropBee
+          
+
+      div.col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
+        block CONTENT
+        div.modal.fade(id="prompt")
+                    div.modal-dialog
+                      div.modal-content(style="width:400px")
+                        div.modal-header
+                          button(type="button", class="close", data-dismiss="modal", aria-hidden="true") &times;
+                          h4(class="modal-title") Prompt
+                        div(id="prompt-content")
+        div.modal.fade(id="console")
+            div.modal-dialog
+              div.modal-content(style="width:800px")
+                div.modal-header
+                  button(type="button", class="close", data-dismiss="modal", aria-hidden="true") &times;
+                  h4(class="modal-title") Console
+                div.modal-body()
+                  div.console(id="console-content", style="width:100%;height:500px;overflow-y:scroll")
+                div.modal-footer
+                  button(type="button", class="btn btn-default", data-dismiss="modal") Close
+                  button(onclick="clear_console();",type="button", class="btn btn-primary") Clear
+                  button.pull-left(onclick="shaker_halt();",type="button", class="btn btn-danger") Halt !
+       style.
+            .console {
+              font-family:Courier;
+              font-weight: bold;
+              color: #CCCCCC;
+              background: #000000;
+              border: 3px double #CCCCCC;
+              padding: 10px;
+            }
+            .console-cmd {
+              color : red;
+              font-weight:bold;
+             }
+            .console-cmd.msg {
+              color : green;
+            }
+      
