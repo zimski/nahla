@@ -11,7 +11,7 @@ module.exports = function(app,client_redis,__dirname){
             if(data_l.length==0)
             res.render('home',{'data':list_machine});
             else
-            data_l.sort().forEach(function(item){
+            data_l.forEach(function(item){
                 client_redis.hgetall(item,function(err,data)
                     {
                         list_machine.push(data);
@@ -27,6 +27,42 @@ module.exports = function(app,client_redis,__dirname){
      //res.header('Access-Control-Allow-Origin', "*")
      res.render('cloud',{port:req.params.port});
     });
+    app.post('/bee_start',function(req,res){
+        id_bee = req.body.id;
+        docker.start_bee(id_bee,function(i,data){
+            var stat;
+            if(i == 0)
+                stat ='ON'; 
+            else
+                stat ='ERROR';
+            res.send(stat);
+            client_redis.hset('NAHLA:ID:'+id_bee,"status",stat,client_redis.print);
+        });
+    });
+    app.post('/bee_stop',function(req,res){
+        id_bee = req.body.id;
+        docker.stop_bee(id_bee,function(i,data){
+            var stat;
+            if(i == 0)
+                stat ='OFF'; 
+            else
+                stat ='ERROR';
+            res.send(stat);
+            client_redis.hset('NAHLA:ID:'+id_bee,"status",stat,client_redis.print);
+
+        });
+    });
+    app.post('/bee_kill',function(req,res){
+        id_bee = req.body.id;
+        docker.start_bee(id_bee,function(i,data){
+            if(i == 0)
+                res.send('ON'); 
+            else
+                res.send('ERROR');
+
+        });
+    });
+
     app.get('/create', function(req,res){
         //if(!req.session.authentificated)
         //res.redirect('/');
@@ -41,12 +77,15 @@ module.exports = function(app,client_redis,__dirname){
         var port = req.params.port;
         fs.readdir(__dirname+'/public/honey/'+port,function(err,files){
             var len = files.length
+            if(len == 0)
+                res.send("no files yet !!");
+            else
             files.forEach(function(file){
                 len -=1;
                 var fileC = __dirname+'/public/honey/'+port+'/'+file;
                 if (fs.lstatSync(fileC).isFile())
                 {
-                    console.log('file found : '+file);
+                    //console.log('file found : '+file);
                     list_files.push(file);
                     if(err) 
                       console.log('erreur'+err);

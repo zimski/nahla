@@ -16,7 +16,9 @@ block CONTENT
                   th Hostname
                   th OS
                   th Ports
-                  th CMD
+                  th
+                  th
+                  th
               tbody
               each hs in data
                 tr(id="tr-#{hs.id}")
@@ -30,6 +32,17 @@ block CONTENT
                     a(href="http://192.168.0.44:#{hs.port_web}") Console
                     a(href="/cloud/#{hs.port_web}")
                         span.glyphicon.glyphicon-cloud(style="margin-left:5px")
+                  td
+                    span(id="status_#{hs.id}")= hs.status
+                  td  
+                    a(onclick="bee_start('#{hs.id}')")
+                        span.glyphicon.glyphicon-play(style="margin-left:5px")
+                    a(onclick="bee_stop('#{hs.id}')")
+                        span.glyphicon.glyphicon-stop(style="margin-left:5px")
+                    a(onclick="bee_delete('#{hs.id}')")
+                        span.glyphicon.glyphicon-trash(style="margin-left:5px")
+
+
     div.col-md-2
        each hs in data
         div.port-class(id="port-#{hs.id}",style="display:none")
@@ -42,9 +55,11 @@ block CONTENT
             tbody 
             each p in JSON.parse(hs.port)
               tr
-                th= p.p_host   
+                th
+                  span.label.label-danger= p.p_host   
                 th >>
-                th= p.c_port  
+                th
+                  span.label.label-success= p.c_port  
                
     script.
         var port_id ='';
@@ -54,3 +69,16 @@ block CONTENT
         g_cpu.refresh(10);
         socket.on('load_cpu',function(data){g_cpu.refresh(data.toFixed(2))});
         socket.on('load_ram',function(data){g_ram.refresh((data/(1024*1024)).toFixed(2))});
+        function bee_start(id){
+             $('#status_'+id).text('loading...');
+            $.post('/bee_start',{'id' : id},function(data){
+               $('#status_'+id).text(data); 
+            }); 
+        }
+        function bee_stop(id){
+         $('#status_'+id).text('loading...');
+            $.post('/bee_stop',{'id' : id},function(data){
+               $('#status_'+id).text(data); 
+            }); 
+        }
+

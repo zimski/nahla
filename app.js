@@ -77,8 +77,8 @@ setInterval(function(){
     for(var i = 0; i < lines.length; i++) {
      lines[i] = lines[i].split(/\s+/);
         }
-    console.log('your real memory usage is', lines[2][2]);
-    console.log('CPU avrage: ',cpu_usage);
+    //console.log('your real memory usage is', lines[2][2]);
+    //console.log('CPU avrage: ',cpu_usage);
     ram_usage = lines[2][2];
     });
     
