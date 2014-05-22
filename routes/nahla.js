@@ -14,6 +14,8 @@ module.exports = function(app,client_redis,__dirname){
             data_l.forEach(function(item){
                 client_redis.hgetall(item,function(err,data)
                     {
+                        if(data.hot_port == undefined)
+                            data.hot_port="[]";
                         list_machine.push(data);
                         console.log(data);
                         //console.log("list "+list_machine.length+" vs data "+length(data));
@@ -60,6 +62,24 @@ module.exports = function(app,client_redis,__dirname){
             else
                 res.send('ERROR');
 
+        });
+    });
+    app.post('/hot_port',function(req,res){
+        bee_id = req.body.id;
+        port = req.body.port;
+        //
+        // redis get hot port
+        //
+        client_redis.hget("NAHLA:ID:"+bee_id,"hot_port",function(err,ports_before){
+            if(ports_before == null)
+                ports_before = "[]";
+            docker.hot_port_bind(JSON.parse(ports_before),bee_id,port,
+            function(ports_after,new_host_port){
+                console.log("hot bind port : "+new_host_port);
+                client_redis.hset("NAHLA:ID:"+bee_id,"hot_port",
+                    JSON.stringify(ports_after),client_redis.print);
+                res.send(new_host_port);
+            });
         });
     });
 

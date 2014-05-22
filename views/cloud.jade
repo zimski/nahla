@@ -7,6 +7,8 @@ block CONTENT
 
     div(id="gauge_cpu",style="height:200px;width:250px;float:right")
     div(id="gauge_ram",style="height:200px;width:250px;float:right")
+    div(style="float:left")
+        img(style="width:200px;hight:200px", src='/images/bee.jpg')
     div.clearfix
     div.cloud.col-md-4
         div(id="cloud")
@@ -23,7 +25,7 @@ block CONTENT
         $(document).ready(function () {
         $('#cloud').fineUploader({
             request: {
-            endpoint: '//192.168.0.44:9000/uploads/#{port}'
+            endpoint: '//'+window.location.host.split(':')[0]+':9000/uploads/#{port}'
             }
             });
         });

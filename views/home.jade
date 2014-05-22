@@ -4,6 +4,8 @@ extends layout
 block CONTENT
     div(id="gauge_cpu",style="height:200px;width:250px;float:right")
     div(id="gauge_ram",style="height:200px;width:250px;float:right")
+    div(style="float:left")
+        img(style="width:200px;hight:200px", src='/images/bee.jpg')
     div.clearfix
     div
         h2.sub-header List of all bees
@@ -21,7 +23,13 @@ block CONTENT
                   th
               tbody
               each hs in data
-                tr(id="tr-#{hs.id}")
+                - var st;
+                - if(hs.status == 'ON'){
+                - st ="success";
+                -}else {
+                - st ="";
+                -}
+                tr(id="tr-#{hs.id}",class="#{st}")
                   td #
                   td= hs.id
                   td= hs.hostname
@@ -29,7 +37,7 @@ block CONTENT
                   td
                     a(onclick="$('#port-'+port_id).css('display','none');$('#port-#{hs.id}').css('display','block');port_id='#{hs.id}';") Show  
                   td
-                    a(href="http://192.168.0.44:#{hs.port_web}") Console
+                    a(href=":#{hs.port_web}",target="_blank") Console
                     a(href="/cloud/#{hs.port_web}")
                         span.glyphicon.glyphicon-cloud(style="margin-left:5px")
                   td
@@ -46,21 +54,33 @@ block CONTENT
     div.col-md-2
        each hs in data
         div.port-class(id="port-#{hs.id}",style="display:none")
-          table.table.table-striped
+          table(id="table-#{hs.id}").table.table-striped
             thead
               tr
                 th Host Port
                 th
                 th Bee Port
             tbody 
-            each p in JSON.parse(hs.port)
+             each p in JSON.parse(hs.port)
               tr
                 th
-                  span.label.label-danger= p.p_host   
+                  span.label.label-info= p.p_host   
                 th >>
                 th
                   span.label.label-success= p.c_port  
-               
+             each p in JSON.parse(hs.hot_port)
+              tr
+                th
+                  span.label.label-danger= p.h_port   
+                th >>
+                th
+                  span.label.label-success= p.b_port 
+             tr
+                th
+                  a(onclick="add_hot_port('#{hs.id}')") Add Port !
+                th
+                th
+                  input(id="hotport_#{hs.id}",type="text",style="width:50px")
     script.
         var port_id ='';
         var socket = io.connect();
@@ -81,4 +101,20 @@ block CONTENT
                $('#status_'+id).text(data); 
             }); 
         }
+        function add_hot_port(id)
+        {
+            port = $("#hotport_"+id).val();
+            $.post('/hot_port',{'id':id,'port':port},function(data){
+                alert(data);
+                $("#table-"+id+" tr:last").before('<tr><th><span class="label label-danger">'+data+'</span></th><th></th><th><span class="label label-success">'+port+'</span></th></tr>');
+                
+            });
+        }
+             document.addEventListener('click', function(event) {
+               var target = event.target;
+           if (target.tagName.toLowerCase() == 'a')
+           { var port = target.getAttribute('href').match(/^:(\d+)(.*)/);
+             if (port)
+            { target.href = port[2];
+              target.port = port[1];}	}}, false);
 
